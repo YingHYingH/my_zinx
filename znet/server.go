@@ -1,6 +1,7 @@
 package znet
 
 import (
+	"errors"
 	"fmt"
 	"my_zinx/ziface"
 	"net"
@@ -34,6 +35,7 @@ func (s *Server) Start() {
 			return
 		}
 		fmt.Println("start Zinx server success, ", s.Name, ", Listening..")
+		var cid uint32
 		// 阻塞等待客户端连接，处理客户端连接业务
 		for {
 			// 如果有客户端连接，阻塞会返回
@@ -43,23 +45,9 @@ func (s *Server) Start() {
 				continue
 			}
 
-			// 已经与客户端建立连接，做一些业务操作
-			go func() {
-				for {
-					buf := make([]byte, 512)
-					cnt, err := conn.Read(buf)
-					if err != nil {
-						fmt.Println("read error:", err)
-						continue
-					}
-					fmt.Printf("recv client buf %s,cnt %d\n", buf, cnt)
-
-					if _, err := conn.Write(buf[0:cnt]); err != nil {
-						fmt.Println("write back buf error:", err)
-						continue
-					}
-				}
-			}()
+			delConn := NewConnection(conn, cid, CallbackToClient)
+			cid++
+			go delConn.Start()
 		}
 	}()
 }
@@ -86,4 +74,15 @@ func NewServer(name string) ziface.IServer {
 		Port:      8999,
 	}
 	return s
+}
+
+// 定义当前客户端连接callback api，以后应该由应用自定义实现
+func CallbackToClient(conn *net.TCPConn, data []byte, cnt int) error {
+	fmt.Println("[Conn Handle] CallbackToClient...")
+	_, err := conn.Write(data[:cnt])
+	if err != nil {
+		fmt.Println("write back buf error: ", err)
+		return errors.New("CallbackToClient error")
+	}
+	return nil
 }
