@@ -16,6 +16,8 @@ type Server struct {
 	IP string
 	// 服务器监听的端口
 	Port int
+	// 当前的server添加一个router
+	Router ziface.IRouter
 }
 
 func (s *Server) Start() {
@@ -45,7 +47,7 @@ func (s *Server) Start() {
 				continue
 			}
 
-			delConn := NewConnection(conn, cid, CallbackToClient)
+			delConn := NewConnection(conn, cid, s.Router)
 			cid++
 			go delConn.Start()
 		}
@@ -66,12 +68,18 @@ func (s *Server) Serve() {
 	select {}
 }
 
+func (s *Server) AddRouter(router ziface.IRouter) {
+	s.Router = router
+	fmt.Println("Add Router success")
+}
+
 func NewServer(name string) ziface.IServer {
 	s := &Server{
 		Name:      name,
 		IPVersion: "tcp4",
 		IP:        "0.0.0.0",
 		Port:      8999,
+		Router:    nil,
 	}
 	return s
 }
