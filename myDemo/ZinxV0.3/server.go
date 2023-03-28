@@ -45,7 +45,7 @@ func (p *PingRouter) PostHandle(request ziface.IRequest) {
 func main() {
 	// 创建一个server句柄，使用Zinx的api
 	s := znet.NewServer("[zinx v0.2]")
-	s.AddRouter(&PingRouter{})
+	s.AddRouter(0, &PingRouter{})
 	// 启动server
 	s.Serve()
 }
