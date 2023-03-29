@@ -12,9 +12,11 @@ type GlobalObj struct {
 	TcpPort   int    // 服务器主机监听的端口号
 	Name      string // 服务器名称
 
-	Version        string // Zinx的版本号
-	MaxConn        int    // 服务器允许的最大连接数
-	MaxPackageSize uint32 //数据包最大值
+	Version          string // Zinx的版本号
+	MaxConn          int    // 服务器允许的最大连接数
+	MaxPackageSize   uint32 // 数据包最大值
+	WorkerPoolSize   uint32 // 当前业务Worker池的goroutine的数量
+	MaxWorkerTaskLen uint32 // 框架允许的WorkerPoolSize最大值
 }
 
 var GlobalObject *GlobalObj
@@ -32,13 +34,15 @@ func (g *GlobalObj) Reload() {
 
 func init() {
 	GlobalObject = &GlobalObj{
-		TcpServer:      nil,
-		Host:           "0.0.0.0", // 本地全IP地址
-		TcpPort:        8999,
-		Name:           "ZinxServerApp",
-		Version:        "v0.4",
-		MaxConn:        1000,
-		MaxPackageSize: 4096,
+		TcpServer:        nil,
+		Host:             "0.0.0.0", // 本地全IP地址
+		TcpPort:          8999,
+		Name:             "ZinxServerApp",
+		Version:          "v0.4",
+		MaxConn:          1000,
+		MaxPackageSize:   4096,
+		WorkerPoolSize:   10,
+		MaxWorkerTaskLen: 1024,
 	}
 	GlobalObject.Reload()
 }
