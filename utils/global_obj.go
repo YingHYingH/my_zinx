@@ -38,7 +38,7 @@ func init() {
 		Host:             "0.0.0.0", // 本地全IP地址
 		TcpPort:          8999,
 		Name:             "ZinxServerApp",
-		Version:          "v0.4",
+		Version:          "v0.9",
 		MaxConn:          1000,
 		MaxPackageSize:   4096,
 		WorkerPoolSize:   10,
